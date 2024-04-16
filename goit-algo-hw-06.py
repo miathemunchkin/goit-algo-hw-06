@@ -1,3 +1,5 @@
+from collections import UserDict
+
 class Field:
     def __init__(self, value):
         self.value = value
@@ -36,15 +38,23 @@ class Record:
                 self.phones.remove(p)
 
     def edit_phone(self, old_phone, new_phone):
+        if not Phone.validate_phone(new_phone):
+            raise ValueError("Invalid new phone number format")
+        
+        found = False
         for p in self.phones:
             if p.value == old_phone:
                 p.value = new_phone
-                return
+                found = True
+                break
+                
+        if not found:
+            raise ValueError("Phone number not found")
 
     def find_phone(self, phone):
         for p in self.phones:
             if p.value == phone:
-                return p.value
+                return p
         return None
 
     def __str__(self):
@@ -52,10 +62,7 @@ class Record:
         return f"Contact name: {self.name}, phones: {phones_str}"
 
 
-class AddressBook:
-    def __init__(self):
-        self.data = {}
-
+class AddressBook(UserDict):
     def add_record(self, record):
         self.data[record.name.value] = record
 
